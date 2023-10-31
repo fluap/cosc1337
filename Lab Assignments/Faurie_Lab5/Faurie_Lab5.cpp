@@ -2,7 +2,6 @@
 #include<iomanip>
 #include<string>
 
-#include<cmath>
 
 using namespace std;
 
@@ -96,7 +95,7 @@ class waterConsumption {
 
 
 int main(){
-    waterConsumption first_report;
+    waterConsumption first_report; //Im using an object to store the arrays since c++ functions cant return arrays.
     first_report.input_data();              //1
     first_report.print_headers();           //2
     first_report.display_consumption();     //3
@@ -104,22 +103,3 @@ int main(){
     first_report.get_highest_consumption(); //5
     first_report.get_average_consumption(); //6
 }
-
-// //Display consumption
-
-// void display_report(){
-//     true;
-// }
-
-// void display_highest(){
-//     true;
-// }
-
-// void display_lowest(){
-//     true;
-// }
-
-// void display_average(){
-//     // This function also displays the total
-//     true;
-// }
