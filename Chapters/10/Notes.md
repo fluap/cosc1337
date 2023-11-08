@@ -68,4 +68,5 @@ cout << *anArray << "/n"; // Indirection operator -> value for starting address
 
 ```c
 cout << *(anArray + 1) << "/n";
+
 ```
