@@ -1,13 +1,13 @@
 # Pointers in c++
 
-## Tldr; 
+### Tldr; 
 Every variable is assigned a memory location whose address can be retrieved using the address operator "&". The address of a memory location is called a pointer.
 
 ## Retrieving addresses in c++
 ```c
 int amount;            //standard variable declaration.
 &amount;               //Expression to return the address of amount.
-cout << long(&amount); //Expression to output the address to the console.
+cout << long(&amount); //Expression to output the address to the console in decimal.
 ```
 - By default, c++ returns hexadecimal values for addresses.
     - Converting to long gives us the number address.
@@ -139,7 +139,7 @@ int pointerFunction(int* ptr) { //Declare that an address must be argued.
 void pointerFunction(int *); //int not required, * is required.
 ```
 
-### Function calling with pointer as arument. . .
+### Function calling with pointer as argument. . .
 An address must be sent to the function, therefore . . . 
 - A) Can accept pointer variable of the correct datatype.
 - B) Can accept address from a variable of the correct datatype.
@@ -153,4 +153,155 @@ pointerFunction(aPtr); //Using pointer variable of type int. GOOD
 pointerFunction(&x);   //Referencing address of int variable x. GOOD
 ```
 
+### Pointers to Constants and Constant Pointers. . .
+- Constant datatypes require constant pointers
+```c
+const int constnum = 4;
+cont int* constptr = constnum;
+// Same goes for function calls
+void randomFunction(const int* argument);
+```
+- Functions that have const parameters can accept const and non-const arguments.
+It's good practice to use const parameters in functions that do not mutate the argument.
 
+### Constant Pointers
+- A pointer to *const* implies that the data cannot change, but the pointer can.
+- A *const* pointer is locked to the initialized address, and cannot point to anything else.
+- A *const* pointer to *const* means both the pointer and the value is locked at initialization.
+
+```c
+const int x = 5;       //Example of const data.
+int* const ptr = &x    //Example of const pointer.
+const int* const ptr; //Example of a const pointer pointing to a constant int
+
+```
+Above, *x* is declared as a *constant int*, and is assigned the value 5. 
+Then, *ptr* is declared as a *constant int pointer*, and is assigned the address of *x*. 
+
+Again, the same structure is used for function calls with const pointers being a parameter.
+```c
+void randomFunction(int* const ptr);
+```
+*A good way to remember the weird structure of constant pointer declarations, is by asking what a const pointer is pointing to? In this case, a const pointer called ptr (const ptr) is pointing to ( * ) an integer datatype (int).*
+
+## Dynamic Memory Allocation
+Dynamic memory allocation is the conditional creation and deletion of variables and objects during a program's runtime. It is only achievable through the use of pointers.
+
+- A pointer is created for the *possibility* of a varialble creation.
+- A keyword is then used to dynamically create a variable and assign it to the pointer.
+
+```c
+int* iptr = nullptr;           //creation of a pointer
+int x;                         //Statically created variable.
+cout << "Enter 1 or 0" << endl;//Prompt condition
+cin >> x;                      //Set up condition
+if (x == 1) {                  //Check condition
+    iptr = new int;            //Dynamically create int variable, pointed to by iptr.
+    *iptr = 25;                //Pointer now points to the integer value 25.
+}
+```
+*int x* is statically created because it is assigned a place in memory regardless of what happens during the program's runtime. x will always be present.
+iptr is also statically created for the same reason.
+
+**iptr* however is dynamically created because it is assigned a value both after the execution has started, and only if x is equal to 1. The fact that x can equal any other number and therefore the *iptr would never be created, is what makes *iptr dynamic.
+
+Dynamic memory allocation occurs in the *heap* of memory. Once the heap is used, C++ runtime throws a *bad_alloc* exception. **The default action of this exception is to terminate the program.**
+
+Good practice is to clear unneeded memory usage from the heap (Memory management).
+```c
+delete iptr;    //Frees up the allocated memory
+iptr = nullptr; //Set the pointer to null so that another pointer can point to the address.
+```
+- Array pointers require square brackets when deleted
+```c
+delete [] iptr;
+```
+### Dangling Ponters and Memory Leaks. . . 
+Dangling pointers are those that point to memory which has been freed. (not set to null)
+Dangling pointera are the cause for memory leaks.
+
+To avoid:
+- Set the pointer to null when memory is freed.
+- Verify that pointer is not null before accessing the memory.
+
+## Returning Pointers from Functions
+
+A function can return a pointer to dynamically allocated memory so long as the allocated memory is not deleted.
+- Functions that return pointers to local variables will error out because local variables are automatically destroyed once their scope ends.
+
+## Pointers to Class objects and Structures
+Pointing to a class is the same as pointing to any native datatype. Recall that classes are datatypes, only abstract.
+
+```c
+class Rectangle { //Class definition
+    int x;
+};
+Rectangle *pRect = nullptr; //Pointer definition
+Rectangle rect;             //Instantiate a class object.
+pRect = &rect;              //Assign the address of the object to pointer.
+```
+Calling methods / attributes to objects accessed through a pointer is done differently than if the object is accessed directly.
+```c
+pRect.width    // Wont work
+*pRect.width   // Wont work
+(*pRect).width // Works
+pRect->width   // Works
+```
+
+- **pRect.width;** : pRect is an address and therefore doesnt have a width attribute.
+- ***pRect.width;** : the *dot* '.' is a higher order of operation than the dereferencer. The evaluation (highlighted below) would be evaluated and result in an error: 
+```c
+*(pRect.width);
+```
+- **(*pRect).width;** : By forcing the evaluation to occur by dereferencing the object first, then calling the method, it would succeed.
+- **pRect->width;** : This is a c++ shorthand method of calling members on objects whom are referenced and also works. 
+
+## Selecting Members of Objects
+
+**Take your time on this part, experiment with it in an IDE. . .**
+
+If the object is directly accessible, then the member access operator '**.**' is used.
+If the object is pointed to, then the pointer-to-member access operator '**->**' or deference operator '**\***' must me used.
+
+Sometimes, both can be used!
+
+**Object is directly accessible, member is a pointer:**
+```c
+struct aHouse {
+    string color;
+    int *address = nullptr; //pointer to the house's address (get the metaphor?)
+};
+
+int main {
+    aHouse myHouse;            //Directly accessible object.
+    myHouse.address = new int; // Address now reserved
+    *myHouse.address = 5;      // Dot operation evaluated to address THEN dereferenced to equal five. 
+}
+```
+**Object is pointed to and member is a pointer:**
+```c
+struct aCar {
+    string color;
+    string *parking_space_area = nullptr;
+};
+
+int main {
+    aCar *ptrCar = nullptr;               // Pointer to car object.
+    ptrHouse = new aHouse;                // Reserve address for car object.
+    aCar.parking_space_area = new string; // parking space reserved.
+    *(*aCar).parking_space_area = "VIP";  // *aCar address evaluated to car object.
+                                          // Then, car object . parking_space_area address is accessible.
+                                          // Then, * parking space_area address is dereferenced, and given the value "VIP"
+}
+```
+
+1) *(*aCar).parking_space_area
+2) *(acarobject).parking_space_area
+3) *parking_space_area
+4) = "VIP"
+
+SHORTHAND
+```c
+*aCar->parking_space_area = "VIP";   // -> is used for pointer type dereferencing.
+*(*aCar).parking_space_area = "VIP"; // this line means the same as the one above it.
+```
