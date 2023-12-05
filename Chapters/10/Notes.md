@@ -305,3 +305,65 @@ SHORTHAND
 *aCar->parking_space_area = "VIP";   // -> is used for pointer type dereferencing.
 *(*aCar).parking_space_area = "VIP"; // this line means the same as the one above it.
 ```
+## Smart Pointers
+### Tldr
+Smart pointers are objects that function indentically to pointers, and they have more built-in features such as context management (automatic memory allocation, and freeing abilities).
+
+- Smart pointer objects should not have other references to them.
+- Smart pointers do not support pointer arithmetic.
+
+They essentially are objects that wrap around a regular pointer, called *raw_pointer*s.
+
+
+Reasons for using smart pointers: 
+- **Dangling pointer:** Pointer is deleted while memory is still in use.
+- **Memory leak:** Pointers are not deleted after memory is no longer in use.
+- **Double deletion:** Occurs when the same pointer is deleted twice. (Important in case the pointer was reallocated to something else in the interim.)
+
+Types of smart pointers:
+- **unique_ptr:** Used when an object only has one pointer. Can reassign which pointer owns the object, and automatically deallocate the object if needed.
+- **Shared_ptr:** A reference count manager that allocates joint ownership of an object. Automatically deletes object when count goes to 0.
+- **weak_ptr:** A shared pointer that does not affect the reference count. (useful if two objects point to eachother)
+
+The three types of classes are defined in the <memory> header file. Therefore it is required.
+```c
+#include<memory>
+```
+
+### Unique_ptr
+Declaration
+```c
+unique_ptr<int> uptr1(new int);      //Declared and initialized immediately
+unique_ptr<double> uptr2(new double);//Declared and initialized immediately
+unique_ptr<int> uptr3;               //Declared but not initialized.
+uptr3 = new unique_ptr<int>;         //Initialied previously declared ptr.
+```
+
+Unique pointers can only have one address pointing to the object. Therefore you cannot assign them to eachother.
+```c
+unique_ptr<int> uptr1(new int);
+unique_ptr<int> uptr2(new int) = uptr1 //Illegal
+unique_ptr<int> uptr3;
+uptr3 = uptr1                          //Illegal
+```
+To transfer ownership of a unique_ptr, the move library function is used:
+```c
+uptr3 = move(uptr1)
+```
+First, the object pointed to by uptr3 is deallocated, then uptr1 deallocates its object, finally uptr3 is allocated to the object that uptr1 was previously allocated to.
+
+unique_ptr objects cannot be passed by value as function arguments due to them being copied. They must be passed by reference, or moved.
+```c
+void print_uptr(unique_ptr<int> uptrparam){cout << *uptrparam}; //Must be moved.
+print_uptr(move(uptr3)); //uptr passed by value, and therefore is moved.
+
+void print_uptr(unique_ptr<int>& uptrparam){cout << *uptrparam}; //reference pass called.
+print_uptr(uptr3); //uptr passed by reference, therefore not moved.
+```
+
+While smart pointers delete themselves when the object leaves the scope, they can manually be deleted while in the scope.
+```c
+uptr = nullptr; //setting value to nullptr automatically deletes object.
+                //or
+uptr.reset();   //member function that does the same thing.
+```

@@ -3,28 +3,21 @@
 // a pointer.
 #include <iostream>
 #include <string>
+#include <memory>
 using namespace std;
 
 // Function prototype
-struct GradeInfo {
-   string name;
-   int *testScores = nullptr;
-   double average;
-};
+unique_ptr<int> uptr1(new int);
 
+void print_uptr(unique_ptr<int>&);
 
 int main()
 {  
-   GradeInfo *astudent = nullptr;
-   GradeInfo student;
-   student.testScores = new int;
-   *student.testScores = 5;
-   cout << *student.testScores << 
-   endl;
+   *uptr1 = 10;
 
-   if(true) {
-      astudent = new GradeInfo;
-      (*astudent).testScores = new int;
-      cout << astudent->testScores;
-   }
+   print_uptr(uptr1);
+}
+
+void print_uptr(unique_ptr<int>& uptr_param){
+   cout << *uptr_param;
 }
