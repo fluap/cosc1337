@@ -1,23 +1,27 @@
-// This program calculates the area of a circle. It asks the user
-// if he or she wishes to continue. A loop that demonstrates the
-// toupper function repeats until the user enters 'y', 'Y',
-// 'n', or 'N'.
 #include <iostream>
-#include <iomanip>
 using namespace std;
-// injest a string and print it out 
+
+class StatDemo
+{
+private:
+   static int x;
+   int y;
+
+public:
+   void setx(int a) { x = a; };
+   void sety(int b) { y = b; };
+   int getx() { return x; };
+   int gety() { return y; };
+};
+
+int StatDemo::x;
+
 int main()
 {
-    const int size = 80;
-    char cstring[size];
-
-    cout << "Enter a sentence up to 79 characters long: ";
-    cin.getline(cstring, size);
-    cout << "working \n";
-    cout << "cstring cout test: " << cstring << endl;
-
-    for(int i = 0; cstring[i] != '\0'; i++){
-        cout << cstring[i];
-    }
-    return 0;
+   StatDemo obj1, obj2;
+   obj1.setx(5);
+   cout << "Object 2: " << obj2.getx() << endl;
+   obj2.setx(10);
+   cout << "Object 1: " << obj1.getx() << endl;
+   return 0;
 }

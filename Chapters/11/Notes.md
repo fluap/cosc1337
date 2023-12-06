@@ -1,72 +1,88 @@
-# Chapter 12
+# "this" pointer
+The keyword 'this' is a pointer to the object of a certain class. 
 
-## Character Testing
-
+The keyword this is implicitly passed when retrieving object members to ensure that the correct values are retrieved. 
 ```c
-#include <cctype>
+//assume getter for passed value stored in x
+cExampleclass rock(10), paper(5);
+rock.getValue() // Returns 10
+paper.getValue() //Returns 5
 ```
-The cctype library is a functional library with functions to help testing characters. </br>
-A full list of functions can be found [here](https://cplusplus.com/reference/cctype/). </br>
+The address of 'rock' and 'paper' are each passed along with getValue() behind the scenes. 
 
-Evaluated responses are returned in integer format.
-- 0 = False
-- 1 = True 
-
-### Review: Character injestion. . . 
-A variable must be declared to injest the inputted character. </br>
-**cin.get()** is used to read all up to a " " the stream into the declared variable. </br>
-**cin.getline()** is used to to read the entire stream into the declared variable. </br>
-Some example functions of cctype are shown below . . .
 ```c
-#include<iostream>
-#include<cctype>
-using namespace std;
+this //returns the address of the instantiated class object.
+```
 
-int main(){
-    char x;
-
-    cout << "Enter a character: ";
-    cin.get(x); // Single character is stored into x
-    cout << "The character you entered was: " << x << ".";
+Because 'this' is a pointer, it can be dereferenced to explicitly get object values.
+```c
+(*this).x //Dereferences the address and gets the value of that object's 'x' attribute.
+this->x //Modern way of dereferencing and getting object's 'x' value. 
+```
+Therefore, the getValue functions can look anything like this: 
+```c
+cExampleClass::getValue(){
+    return (*this).x; //Dereference object address, and get x value.
+}
+//or 
+cExampleClass::getValue(){
+    return this->x; //Modern dereference and get x value (same as above)
+}
+//or
+cExampleClass::getValue(){
+    return x; //Implicit pass of this, still gets value.
 }
 ```
-## Character Case Conversion
-
-Functions that allow case conversion. </br>
-characters are automatically validated and characters that cannot change case are returned as is (ie. !@#$%^&*).
-- toupper
-- tolower 
+Finally, to get the address of the object, the object name can be called with & or simply combined with this.
 
 ```c
-cout << toupper("s"); // S
-cout << tolower("A"); // a
-cout << toupper("^"); // ^
+cExampleClass::getAddress(){
+    return this //address of the object.
+}
+//or
+cout << &rock;
+cout << &paper;
 ```
 
-## C-Strings
+___
+# Constant Member Functions
+Similarly to how const keywords inhibit values and pointers from being altered, member functions can be inhibited from modifying the object they belong to.
 
-A C-string is a sequence of characters stored in consecutive memory locations and terminated by a null character.
+This is done by adding the const keyword to the end of their declaration.
+- Note both the in class and out of class declarations must have the const keyword.
 
 ```c
-char name[size]; //character nameofstring[sizeofstring]
+class cExample(){
+    // . . .
+    public:
+        void randomFunction() const;
+};
+
+cExample::randomFunction() const {
+    //This function cannot modify the object
+};
 ```
 
-The type of a c string is a pointer to a character array.
+# Static member variables
+These variables are shared by all instanced objects of a class. If one object changes the variable, all other objects will see the reflected change when accessing it.
+
+These are also known as class-level members / class-level variables.
+
+Their declaration is prefixed by the keyword static:
 ```c
-char *;
+static int x;
 ```
-
-## String Literals
-Also known as *String constants*. They are written directly into the program as a sequence of characters surrounded by double quotes. </br>
-Regardless, these string literals are processed as c-strings by the compiler. An array of the string length is allocated, each character is the placed into the array, and finally the terminator is added in the last element of the array '\0'.
-
-Instantiation from a string literal to a C-String:
-
-**Note:** The maximum size for a string is 80.
+Usage in a program requires two declarations. 
+- The first declaration is to specify its type and the fact that its a static member of a class.
+- The second declaration is to allocate memory for the variable. </br>
+**Note:** The second declaration must be outside of the class.
 ```c
-const int size = 20;
-char company[size] = "Hello world"; // Traditional declaration
-//
-char corporation[] = "HELLO WORLD"; // Size is optional when declaring with string literal.
+class cExample(){
+    public: 
+        statc int x; // First Declaration
+}
+
+int cExample::x; //Second Declaration
 ```
+Without the second declaration, a linker error will be thrown during compilation.
 

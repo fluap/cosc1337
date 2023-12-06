@@ -18,7 +18,7 @@ int main(){
     myWriteFile.close();
 
     cout << "READING" << endl;
-    
+
     myReadFile.open("myName.txt");
     myReadFile >> readName;
     cout << readName << endl;
