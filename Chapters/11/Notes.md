@@ -86,3 +86,15 @@ int cExample::x; //Second Declaration
 ```
 Without the second declaration, a linker error will be thrown during compilation.
 
+# Static Member methods
+Static member methods, or class-level functions follow the same rules as static member variables.
+
+Prepend the static keyword to a regular function.
+
+```c
+static <return type><function name>(<parameter list>)
+```
+
+***
+# Class Friends
+A function that is not a member of a class but has access to that class's private members.
